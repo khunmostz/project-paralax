@@ -168,14 +168,13 @@ class _HomeState extends State<Home> {
               ...contentsection(size),
             ],
 
-           
             // scroll view
             Positioned.fill(
               child: SingleChildScrollView(
                 physics: BouncingScrollPhysics(),
                 controller: _scrollController,
                 child: SizedBox(
-                  height: layoutHeight,
+                  height: layoutHeight * 99,
                 ),
               ),
             ),
@@ -198,30 +197,59 @@ class _HomeState extends State<Home> {
 
   List<Widget> contentsection(Size size) {
     var ramenOffset = newOffset.clamp(0, 300);
-    var ramenPercent = ramenOffset / 300;
+    var ramenPercent = (ramenOffset / 300);
+
+    // print(newOffset);
 
     var textJapan = 0.0;
     var textNewOffset = 0.0;
 
-    print('ramenP ${ramenOffset}');
+    var sushiDish = 0.0;
 
-    if (ramenOffset >= 300) {
-      textJapan = _scrollOffset;
-      // textJapan = (_scrollOffset -);
-      textNewOffset = (textJapan - _scrollOffset);
-      print('tnof: ${textJapan}');
+    double moveOut = 0.0;
+
+    double disIn1 = 0.0;
+    double disIn2 = 0.0;
+
+    if (ramenPercent >= 1) {
+      // print('***' * 10);
+      double offSet2 = (newOffset - 300);
+      textJapan = offSet2;
+      // print(offSet2);
     }
+
+    if (textJapan >= 200) {
+      disIn1 = (textJapan - 200) * 0.15;
+      print(disIn1);
+    }
+
+    if (disIn1 >= 200) {
+      disIn2 = (disIn1 - 200) / 0.15;
+      // print(disIn2);
+    }
+
+    if (disIn2 >= 200) {
+      moveOut = ((disIn2 - 200) / 0.15) * 0.15;
+      // print(moveOut);
+    }
+
+    double logoCenter = (size.width / 2) - 50;
 
     return [
       AnimatedPositioned(
         duration: 0.milliseconds,
-        top: lerpDouble(0, ramenOffset * 0.53, ramenPercent),
-        left: (size.width / 2) - (100 / 2),
-        // right: layoutHeight * 0.5,
-        // width: 200,
-        // height: 100,
+        top: moveOut >= 0
+            ? (lerpDouble(0, (ramenOffset) * 0.53, ramenPercent)!.toDouble() -
+                moveOut)
+            : lerpDouble(0, (ramenOffset) * 0.53, ramenPercent),
+        left: textJapan >= 0
+            ? (size.width / 2) -
+                (100 / 2) +
+                lerpDouble(0, 20, textJapan.clamp(0, 200) / 200)!.toDouble()
+            : (size.width / 2) - (100 / 2),
+        // left:  textJapan > 0 ? lerpDouble(logoCenter + ramenOffset.clamp(0, 50), 70, 0.5) : logoCenter + ramenOffset.clamp(0, 50),
         child: Transform.rotate(
-          angle: lerpDouble(ramenOffset, 360, ramenPercent)! * pi / 180,
+          angle: lerpDouble(0, 360, ramenPercent)! * pi / 180,
           child: Transform.scale(
             scale: ramenPercent + 0.4,
             child: Container(
@@ -236,10 +264,18 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-      // if (ramenPercent == 1.0) ...[
-        Positioned(
-          top: lerpDouble(0, ramenOffset * 0.53, ramenPercent),
-          left: size.width /4,
+      if (ramenPercent == 1.0) ...[
+        AnimatedPositioned(
+          duration: 0.milliseconds,
+          top: moveOut > 0
+              ? (lerpDouble(0, (ramenOffset) * 0.53, ramenPercent))!
+                      .toDouble() -
+                  moveOut
+              : lerpDouble(0, ramenOffset * 0.53, ramenPercent),
+          left: textJapan >= 0
+              ? (size.width / 2) -
+                  lerpDouble(0, 80, textJapan.clamp(0, 200) / 200)!.toDouble()
+              : (size.width / 2),
           child: Transform.scale(
             scale: ramenPercent,
             child: Text(
@@ -251,7 +287,39 @@ class _HomeState extends State<Home> {
             ),
           ),
         ),
-      // ]
+      ],
+      AnimatedPositioned(
+        left: disIn1 > 0
+            ? -200 + lerpDouble(0, 200, disIn1.clamp(0, 200) / 200)!.toDouble()
+            : -200,
+        top: moveOut > 0
+            ? (lerpDouble(0, size.height * 0.4, disIn1.clamp(0, 200) / 200))!
+                    .toDouble() -
+                moveOut
+            : size.height * 0.4,
+        duration: 0.milliseconds,
+        child: Container(
+          width: 200,
+          height: 80,
+          color: Colors.white,
+        ),
+      ),
+      AnimatedPositioned(
+        right: disIn2 > 0
+            ? -200 + lerpDouble(0, 200, disIn2.clamp(0, 200) / 200)!.toDouble()
+            : -200,
+        top: moveOut > 0
+            ? (lerpDouble(0, size.height * 0.6, disIn2.clamp(0, 200) / 200))!
+                    .toDouble() -
+                moveOut
+            : size.height * 0.6,
+        duration: 0.milliseconds,
+        child: Container(
+          width: 200,
+          height: 80,
+          color: Colors.white,
+        ),
+      ),
     ];
   }
 }

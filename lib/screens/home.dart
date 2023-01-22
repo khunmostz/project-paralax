@@ -220,11 +220,12 @@ class _HomeState extends State<Home> {
 
     if (textJapan >= 200) {
       disIn1 = (textJapan - 200) * 0.15;
+      // 200 เพราะ ​clamp textJapan ไว้ 200 จริงๆ ควรเอาขนาดหน้าจอ
       print(disIn1);
     }
 
     if (disIn1 >= 200) {
-      disIn2 = (disIn1 - 200) / 0.15;
+      disIn2 = ((disIn1 - 200) / 0.15) * 0.15;
       // print(disIn2);
     }
 
@@ -249,9 +250,10 @@ class _HomeState extends State<Home> {
             : (size.width / 2) - (100 / 2),
         // left:  textJapan > 0 ? lerpDouble(logoCenter + ramenOffset.clamp(0, 50), 70, 0.5) : logoCenter + ramenOffset.clamp(0, 50),
         child: Transform.rotate(
-          angle: lerpDouble(0, 360, ramenPercent)! * pi / 180,
+          angle: (lerpDouble(0, 360, ramenPercent)! * pi / 180) * 0.25,
           child: Transform.scale(
-            scale: ramenPercent + 0.4,
+            scale:
+                lerpDouble(0, (ramenPercent + 0.4), (ramenPercent + 0.4) / 1.4),
             child: Container(
               decoration:
                   BoxDecoration(border: Border.all(color: Colors.white)),
@@ -290,7 +292,9 @@ class _HomeState extends State<Home> {
       ],
       AnimatedPositioned(
         left: disIn1 > 0
-            ? -200 + lerpDouble(0, 200, disIn1.clamp(0, 200) / 200)!.toDouble()
+            ? -200 +
+                lerpDouble(0, 200, disIn1.clamp(0, 200) / 200)!
+                    .toDouble() // ลบ 200 เพื่อที่มันจะออกข้างจอไปแล้ว  lerp 200 ให้มันเข้ามาโดยใช้ค่า clamp 200 / 200 จะได้ 0 - 1
             : -200,
         top: moveOut > 0
             ? (lerpDouble(0, size.height * 0.4, disIn1.clamp(0, 200) / 200))!
@@ -298,10 +302,30 @@ class _HomeState extends State<Home> {
                 moveOut
             : size.height * 0.4,
         duration: 0.milliseconds,
-        child: Container(
-          width: 200,
-          height: 80,
-          color: Colors.white,
+        child: Transform.scale(
+          scaleX: -1,
+          // transform: Matrix4.rotationX(pi / 180),
+          // child: Container(
+          //   width: 200,
+          //   height: 80,
+          //   // color: Colors.white,
+          //   decoration: BoxDecoration(
+          //       border: Border.all(color: Colors.white),
+          //       image: DecorationImage(
+          //         image: AssetImage('assets/images/sushi-dish.png'),
+          //         // fit: BoxFit.contain,
+          //       )),
+          // ),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white),
+            ),
+            child: Image.asset(
+              'assets/images/sushi-dish.png',
+              width: 200,
+              height: 200,
+            ),
+          ),
         ),
       ),
       AnimatedPositioned(
@@ -314,10 +338,23 @@ class _HomeState extends State<Home> {
                 moveOut
             : size.height * 0.6,
         duration: 0.milliseconds,
-        child: Container(
-          width: 200,
-          height: 80,
-          color: Colors.white,
+        // child: Container(
+        //   width: 200,
+        //   height: 80,
+        //   color: Colors.white,
+        // ),
+        child: Transform.scale(
+          scaleX: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white),
+            ),
+            child: Image.asset(
+              'assets/images/sushi-dish.png',
+              width: 200,
+              height: 200,
+            ),
+          ),
         ),
       ),
     ];
